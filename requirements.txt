@@ -1,0 +1,4 @@
+environs>=9.5.0
+aiogram>=2.21
+asyncpg>=0.26.0
+aioredis>=2.0.1
