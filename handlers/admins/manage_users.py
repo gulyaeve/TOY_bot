@@ -55,9 +55,9 @@ async def set_manager(message: types.Message, state: FSMContext):
     await message.reply(f'Менеджер установлен <b>{user_info}</b>',
                         reply_markup=types.ReplyKeyboardRemove())
     try:
-        bot.send_message(user_to_set['telegram_id'], "Вы были назначены менеджером данного бота")
+        await bot.send_message(user_to_set['telegram_id'], "Вы были назначены менеджером данного бота")
     except Exception as e:
-        log(INFO, f"Failed to send to [{user_to_set['telegram_id']}]")
+        log(INFO, f"Failed to send to [{user_to_set['telegram_id']}] {e}")
     await state.finish()
 
 
