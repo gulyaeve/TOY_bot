@@ -12,9 +12,9 @@ class ManagerCheck(BoundFilter):
         Фильтр для проверки менеджера
         """
         manager_user_type = await users.select_user_type("manager")
-        user = await users.select_user(type_user_id=manager_user_type['id'])
+        user = await users.select_user(telegram_id=message.from_user.id)
         try:
-            if message.from_user.id == user['telegram_id']:
+            if user['type_user_id'] == manager_user_type['id']:
                 log(INFO, f"[{message.from_user.id=}] пользователь является менеджером")
                 return True
             else:
