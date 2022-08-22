@@ -34,9 +34,9 @@ class Teachers(Database):
     #     sql = "UPDATE users SET full_name=$1 WHERE telegram_id=$2"
     #     return await self.execute(sql, full_name, telegram_id, execute=True)
     #
-    # async def update_user_username(self, username: str, telegram_id: int) -> asyncpg.Record:
-    #     sql = "UPDATE users SET username=$1 WHERE telegram_id=$2"
-    #     return await self.execute(sql, username, telegram_id, execute=True)
+    async def update_teacher_photo_id(self, file_id: str, id: int) -> asyncpg.Record:
+        sql = "UPDATE teachers SET photo_file_id=$1 WHERE id=$2"
+        return await self.execute(sql, file_id, id, execute=True)
 
     async def select_all_teachers(self) -> list:
         sql = "SELECT * FROM teachers"

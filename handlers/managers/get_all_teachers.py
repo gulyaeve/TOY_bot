@@ -5,13 +5,6 @@ from aiogram.dispatcher.filters import Text
 
 from filters import ManagerCheck
 from loader import dp, teachers
-from utils.teachers.create_teachers import create_teachers
-
-
-@dp.message_handler(ManagerCheck(), commands=['get_all_teachers'])
-async def get_all_teachers(message: types.Message):
-    await create_teachers()
-    await message.reply('Учителя сохранены в базе')
 
 
 @dp.callback_query_handler(text='back_to_letters')
