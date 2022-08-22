@@ -4,7 +4,7 @@ from aiogram import types
 from aiogram.dispatcher.filters import Text
 
 from filters import ManagerCheck
-from loader import dp, teachers
+from loader import dp, teachers, messages
 
 
 @dp.callback_query_handler(text='back_to_letters')
@@ -21,7 +21,7 @@ async def create_finalists(callback: types.CallbackQuery):
                 text=letter, callback_data=f'teacher_letter={letter}'
             )
         )
-    await callback.message.edit_text('Выберите первую букву фамилии:', reply_markup=inline_keyboard)
+    await callback.message.edit_text(await messages.get_message('choose_letter'), reply_markup=inline_keyboard)
 
 
 @dp.message_handler(ManagerCheck(), commands=['create_finalists'])
@@ -38,7 +38,7 @@ async def create_finalists(message: types.Message):
                 text=letter, callback_data=f'teacher_letter={letter}'
             )
             )
-    await message.answer('Выберите первую букву фамилии:', reply_markup=inline_keyboard)
+    await message.answer(await messages.get_message('choose_letter'), reply_markup=inline_keyboard)
 
 
 @dp.callback_query_handler(Text(startswith='teacher_letter='))
@@ -61,7 +61,7 @@ async def get_finalists_for_letter(callback: types.CallbackQuery):
         )
     )
     await callback.message.delete()
-    await callback.message.answer('Выберите участника:', reply_markup=inline_keyboard)
+    await callback.message.answer(await messages.get_message('choose_teacher'), reply_markup=inline_keyboard)
 
 
 @dp.callback_query_handler(Text(startswith='teacher='))
@@ -76,11 +76,13 @@ async def get_teacher_info(callback: types.CallbackQuery):
         )
     )
     await callback.message.delete()
+    card_info = await messages.get_message('card_info')
+    photo = teacher['photo_file_id'] if teacher['photo_file_id'] is not None else io.BytesIO(teacher['photo_raw_file'])
     await callback.message.answer_photo(
-        photo=io.BytesIO(teacher['photo_raw_file']),
-        caption=f"ФИО: <i>{teacher['full_name']}</i>\n"
-                f"Регион: <i>{teacher['region']}</i>\n"
-                f"Предмет: <i>{', '.join(teacher['subject'])}</i>\n",
+        photo=photo,
+        caption=card_info.format(full_name=teacher['full_name'],
+                                 region=teacher['region'],
+                                 subject=', '.join(teacher['subject'])),
         reply_markup=inline_keyboard
     )
 
