@@ -5,6 +5,7 @@ from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
 from config import Config
 from utils.db_api.db import Database
+from utils.db_api.teachers import Teachers
 from utils.db_api.users import Users
 from utils.db_api.messages import Messages
 
@@ -20,6 +21,7 @@ db = Database()
 users = Users()
 # Messages from database
 messages = Messages()
+teachers = Teachers()
 
 # Logging setup
 logging.basicConfig(handlers=(logging.FileHandler('logs/log.txt'), logging.StreamHandler()),
