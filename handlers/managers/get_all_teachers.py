@@ -67,17 +67,27 @@ async def get_finalists_for_letter(callback: types.CallbackQuery):
             callback_data='back_to_letters'
         )
     )
-    await callback.message.edit_text('Выберите участника:', reply_markup=inline_keyboard)
+    await callback.message.delete()
+    await callback.message.answer('Выберите участника:', reply_markup=inline_keyboard)
 
 
 @dp.callback_query_handler(Text(startswith='teacher='))
 async def get_teacher_info(callback: types.CallbackQuery):
     teacher_id = callback.data.split('=')[1]
     teacher = await teachers.select_teacher(id=int(teacher_id))
+    inline_keyboard = types.InlineKeyboardMarkup()
+    inline_keyboard.add(
+        types.InlineKeyboardButton(
+            text="◀️",
+            callback_data=f"teacher_letter={teacher['full_name'][0]}"
+        )
+    )
+    await callback.message.delete()
     await callback.message.answer_photo(
         photo=io.BytesIO(teacher['photo_raw_file']),
         caption=f"ФИО: <i>{teacher['full_name']}</i>\n"
                 f"Регион: <i>{teacher['region']}</i>\n"
-                f"Предмет: <i>{' '.join(teacher['subject'])}</i>\n"
+                f"Предмет: <i>{', '.join(teacher['subject'])}</i>\n",
+        reply_markup=inline_keyboard
     )
 
