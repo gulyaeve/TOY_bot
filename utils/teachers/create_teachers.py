@@ -20,7 +20,7 @@ async def create_teachers():
                 file_id=None,
                 raw_file=teacher['photo_raw_file']
             )
-            log(INFO, f"Teacher saved {new_teacher}")
+            log(INFO, f"Teacher saved {new_teacher['id']}")
         except UniqueViolationError:
             # exist_user_type = await users.select_user_type(user_type)
             log(INFO, f"Teacher exists {teacher}")

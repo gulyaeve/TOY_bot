@@ -1,12 +1,9 @@
-from dataclasses import dataclass
-
 from environs import Env
 
 env = Env()
 env.read_env()
 
 
-@dataclass
 class Config:
     # Telegram auth:
     telegram_token = env.str("TELEGRAM_API_TOKEN")

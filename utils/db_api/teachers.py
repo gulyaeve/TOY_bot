@@ -42,10 +42,10 @@ class Teachers(Database):
         sql = "SELECT * FROM teachers"
         return await self.execute(sql, fetch=True)
 
-    # async def select_user(self, **kwargs) -> asyncpg.Record:
-    #     sql = "SELECT * FROM users WHERE "
-    #     sql, parameters = self.format_args(sql, parameters=kwargs)
-    #     return await self.execute(sql, *parameters, fetchrow=True)
+    async def select_teacher(self, **kwargs) -> asyncpg.Record:
+        sql = "SELECT * FROM teachers WHERE "
+        sql, parameters = self.format_args(sql, parameters=kwargs)
+        return await self.execute(sql, *parameters, fetchrow=True)
     #
     # async def count_users(self):
     #     sql = "SELECT COUNT(*) FROM users"
