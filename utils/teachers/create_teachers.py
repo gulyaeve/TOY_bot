@@ -2,13 +2,11 @@ from logging import log, INFO
 
 from asyncpg import UniqueViolationError
 
-from loader import users, teachers
+from loader import teachers
 from misc.parse_toy_site import get_teachers_list
 
 
 async def create_teachers():
-    # with open("templates/type_users_template.json", "r", encoding="utf-8") as file:
-    #     new_types = json.loads(file.read())
     teachers_list = get_teachers_list()
     for teacher in teachers_list:
         try:
@@ -22,6 +20,5 @@ async def create_teachers():
             )
             log(INFO, f"Teacher saved {new_teacher['id']}")
         except UniqueViolationError:
-            # exist_user_type = await users.select_user_type(user_type)
             log(INFO, f"Teacher exists {teacher}")
     log(INFO, "User types success saved to DB")

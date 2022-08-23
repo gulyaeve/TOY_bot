@@ -4,8 +4,14 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from logging import log, INFO
 
+from filters import ManagerCheck
 from loader import dp, messages
 from utils.utilities import get_bot_info
+
+
+@dp.message_handler(ManagerCheck(), commands=['help'])
+async def help_command_manager(message: types.Message):
+    await message.answer(await messages.get_message("help_manager"))
 
 
 @dp.message_handler(commands=['help'])

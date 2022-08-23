@@ -5,6 +5,10 @@ import asyncpg
 from utils.db_api.db import Database
 
 
+class MaxFinalistReached(Exception):
+    pass
+
+
 class Teachers(Database):
     def __init__(self):
         super().__init__()
@@ -21,6 +25,10 @@ class Teachers(Database):
             photo_file_id text,
             photo_raw_file bytea
         );
+        CREATE TABLE IF NOT EXISTS finalists (
+            id int UNIQUE references teachers(id),
+            group_id int default 0
+        );
         """
         await self.execute(sql, execute=True)
 
@@ -30,10 +38,6 @@ class Teachers(Database):
               "VALUES($1, $2, $3, $4, $5, $6) returning *"
         return await self.execute(sql, id, full_name, region, subject, file_id, raw_file, fetchrow=True)
 
-    # async def update_user_fullname(self, full_name: str, telegram_id: int) -> asyncpg.Record:
-    #     sql = "UPDATE users SET full_name=$1 WHERE telegram_id=$2"
-    #     return await self.execute(sql, full_name, telegram_id, execute=True)
-    #
     async def update_teacher_photo_id(self, file_id: str, id: int) -> asyncpg.Record:
         sql = "UPDATE teachers SET photo_file_id=$1 WHERE id=$2"
         return await self.execute(sql, file_id, id, execute=True)
@@ -46,11 +50,19 @@ class Teachers(Database):
         sql = "SELECT * FROM teachers WHERE "
         sql, parameters = self.format_args(sql, parameters=kwargs)
         return await self.execute(sql, *parameters, fetchrow=True)
-    #
-    # async def count_users(self):
-    #     sql = "SELECT COUNT(*) FROM users"
-    #     return await self.execute(sql, fetchval=True)
-    #
+    
+    async def save_finalist(self, id: str) -> asyncpg.Record:
+        count_finalists = await self.count_finalists()
+        if count_finalists < 15:
+            sql = "INSERT INTO finalists (id) VALUES($1) returning *"
+            return await self.execute(sql, id, fetchrow=True)
+        else:
+            raise MaxFinalistReached
+
+    async def count_finalists(self):
+        sql = "SELECT COUNT(*) FROM finalists"
+        return await self.execute(sql, fetchval=True)
+
     # async def delete_user(self, telegram_id):
     #     await self.execute("DELETE FROM users WHERE telegram_id=$1", telegram_id, execute=True)
     #
