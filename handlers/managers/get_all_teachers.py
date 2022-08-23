@@ -1,7 +1,7 @@
 import io
 
 from aiogram import types
-from aiogram.dispatcher.filters import Text
+from aiogram.dispatcher.filters import Text, Regexp
 
 from filters import ManagerCheck
 from loader import dp, teachers, messages
@@ -66,10 +66,21 @@ async def get_finalists_for_letter(callback: types.CallbackQuery):
 
 @dp.callback_query_handler(Text(startswith='teacher='))
 async def get_teacher_info(callback: types.CallbackQuery):
-    teacher_id = callback.data.split('=')[1]
-    teacher = await teachers.select_teacher(id=int(teacher_id))
-    inline_keyboard = types.InlineKeyboardMarkup()
+    teacher_id = int(callback.data.split('=')[1])
+    teacher = await teachers.select_teacher(id=teacher_id)
+    inline_keyboard = types.InlineKeyboardMarkup(row_width=1)
+    button_finalist_on = types.InlineKeyboardButton(
+            text="Сделать финалистом 🏁",
+            callback_data=f"make_finalist={teacher['id']}"
+        )
+    button_finalist_off = types.InlineKeyboardButton(
+            text="Убрать финалиста ❌",
+            callback_data=f"delete_finalist={teacher['id']}"
+        )
+    check_finalist = await teachers.check_finalist(teacher['id'])
+    button = button_finalist_on if check_finalist is not True else button_finalist_off
     inline_keyboard.add(
+        button,
         types.InlineKeyboardButton(
             text="◀️",
             callback_data=f"teacher_letter={teacher['full_name'][0]}"
@@ -86,3 +97,54 @@ async def get_teacher_info(callback: types.CallbackQuery):
         reply_markup=inline_keyboard
     )
 
+
+@dp.callback_query_handler(Regexp('make_finalist=([0-9]*)'))
+async def save_finalist(callback: types.CallbackQuery):
+    teacher_id = int(callback.data.split('=')[1])
+    teacher = await teachers.select_teacher(id=teacher_id)
+    await teachers.save_finalist(id=teacher_id)
+    inline_keyboard = types.InlineKeyboardMarkup(row_width=1)
+    button_finalist_on = types.InlineKeyboardButton(
+        text="Сделать финалистом 🏁",
+        callback_data=f"make_finalist={teacher['id']}"
+    )
+    button_finalist_off = types.InlineKeyboardButton(
+        text="Убрать финалиста ❌",
+        callback_data=f"delete_finalist={teacher['id']}"
+    )
+    check_finalist = await teachers.check_finalist(teacher['id'])
+    button = button_finalist_on if check_finalist is not True else button_finalist_off
+    inline_keyboard.add(
+        button,
+        types.InlineKeyboardButton(
+            text="◀️",
+            callback_data=f"teacher_letter={teacher['full_name'][0]}"
+        )
+    )
+    await callback.message.edit_reply_markup(inline_keyboard)
+
+
+@dp.callback_query_handler(Regexp('delete_finalist=([0-9]*)'))
+async def save_finalist(callback: types.CallbackQuery):
+    teacher_id = int(callback.data.split('=')[1])
+    teacher = await teachers.select_teacher(id=teacher_id)
+    await teachers.delete_finalist(id=teacher_id)
+    inline_keyboard = types.InlineKeyboardMarkup(row_width=1)
+    button_finalist_on = types.InlineKeyboardButton(
+        text="Сделать финалистом 🏁",
+        callback_data=f"make_finalist={teacher['id']}"
+    )
+    button_finalist_off = types.InlineKeyboardButton(
+        text="Убрать финалиста ❌",
+        callback_data=f"delete_finalist={teacher['id']}"
+    )
+    check_finalist = await teachers.check_finalist(teacher['id'])
+    button = button_finalist_on if check_finalist is not True else button_finalist_off
+    inline_keyboard.add(
+        button,
+        types.InlineKeyboardButton(
+            text="◀️",
+            callback_data=f"teacher_letter={teacher['full_name'][0]}"
+        )
+    )
+    await callback.message.edit_reply_markup(inline_keyboard)

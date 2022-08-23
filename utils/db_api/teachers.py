@@ -42,7 +42,7 @@ class Teachers(Database):
         sql = "UPDATE teachers SET photo_file_id=$1 WHERE id=$2"
         return await self.execute(sql, file_id, id, execute=True)
 
-    async def select_all_teachers(self) -> list:
+    async def select_all_teachers(self) -> list[asyncpg.Record]:
         sql = "SELECT * FROM teachers"
         return await self.execute(sql, fetch=True)
 
@@ -59,12 +59,25 @@ class Teachers(Database):
         else:
             raise MaxFinalistReached
 
+    async def select_finalist(self, **kwargs) -> asyncpg.Record:
+        sql = "SELECT * FROM finalists WHERE "
+        sql, parameters = self.format_args(sql, parameters=kwargs)
+        return await self.execute(sql, *parameters, fetchrow=True)
+
     async def count_finalists(self):
         sql = "SELECT COUNT(*) FROM finalists"
         return await self.execute(sql, fetchval=True)
 
-    # async def delete_user(self, telegram_id):
-    #     await self.execute("DELETE FROM users WHERE telegram_id=$1", telegram_id, execute=True)
+    async def clear_finalists(self):
+        sql = "TRUNCATE TABLE finalists"
+        await self.execute(sql, execute=True)
+
+    async def check_finalist(self, id: int) -> bool:
+        finalist = await self.select_finalist(id=id)
+        return True if finalist is not None else False
+
+    async def delete_finalist(self, id: int):
+        await self.execute("DELETE FROM finalists WHERE id=$1", id, execute=True)
     #
     # async def delete_users(self):
     #     await self.execute("DELETE FROM users WHERE TRUE", execute=True)
