@@ -5,6 +5,7 @@ from aiogram import executor
 
 from utils.commands import set_default_commands
 from utils.messages.create_messages import create_messages
+from utils.parameters.create_parameters import create_parameters
 from utils.users.create_user_types import create_user_types
 from utils.utilities import get_bot_info, make_dict_output
 
@@ -21,6 +22,7 @@ async def on_startup(dp):
     bot_info = make_dict_output(await get_bot_info())
     await create_user_types()
     await create_messages()
+    await create_parameters()
     await notify_admins(f"Бот запущен и готов к работе.\n\n<code>{bot_info}</code>")
 
 

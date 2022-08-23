@@ -26,8 +26,13 @@ class Teachers(Database):
             photo_raw_file bytea
         );
         CREATE TABLE IF NOT EXISTS finalists (
-            id int UNIQUE references teachers(id),
+            id int UNIQUE NOT NULL references teachers(id),
             group_id int default 0
+        );
+        CREATE TABLE IF NOT EXISTS parameters (
+            id serial NOT NULL UNIQUE,
+            description text,
+            value character varying(255)
         );
         """
         await self.execute(sql, execute=True)
@@ -53,7 +58,8 @@ class Teachers(Database):
     
     async def save_finalist(self, id: str) -> asyncpg.Record:
         count_finalists = await self.count_finalists()
-        if count_finalists < 15:
+        max_finalists = await self.select_parameter('max_finalists')
+        if count_finalists < int(max_finalists):
             sql = "INSERT INTO finalists (id) VALUES($1) returning *"
             return await self.execute(sql, id, fetchrow=True)
         else:
@@ -78,6 +84,14 @@ class Teachers(Database):
 
     async def delete_finalist(self, id: int):
         await self.execute("DELETE FROM finalists WHERE id=$1", id, execute=True)
+
+    async def add_parameter(self, description: str, value: str) -> asyncpg.Record:
+        sql = "INSERT INTO parameters (description, value) VALUES($1, $2) returning *"
+        return await self.execute(sql, description, value, fetchrow=True)
+
+    async def select_parameter(self, description: str) -> str:
+        sql = "SELECT value FROM parameters WHERE description=$1"
+        return await self.execute(sql, description, fetchval=True)
     #
     # async def delete_users(self):
     #     await self.execute("DELETE FROM users WHERE TRUE", execute=True)
