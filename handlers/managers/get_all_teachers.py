@@ -5,6 +5,7 @@ from aiogram.dispatcher.filters import Text, Regexp
 
 from filters import ManagerCheck
 from loader import dp, teachers, messages
+from utils.db_api.teachers import MaxFinalistReached
 
 
 @dp.callback_query_handler(text='back_to_letters')
@@ -102,7 +103,6 @@ async def get_teacher_info(callback: types.CallbackQuery):
 async def save_finalist(callback: types.CallbackQuery):
     teacher_id = int(callback.data.split('=')[1])
     teacher = await teachers.select_teacher(id=teacher_id)
-    await teachers.save_finalist(id=teacher_id)
     inline_keyboard = types.InlineKeyboardMarkup(row_width=1)
     button_finalist_on = types.InlineKeyboardButton(
         text="Сделать финалистом 🏁",
@@ -112,8 +112,15 @@ async def save_finalist(callback: types.CallbackQuery):
         text="Убрать финалиста ❌",
         callback_data=f"delete_finalist={teacher['id']}"
     )
-    check_finalist = await teachers.check_finalist(teacher['id'])
-    button = button_finalist_on if check_finalist is not True else button_finalist_off
+    try:
+        await teachers.save_finalist(id=teacher_id)
+        check_finalist = await teachers.check_finalist(teacher['id'])
+        button = button_finalist_on if check_finalist is not True else button_finalist_off
+    except MaxFinalistReached:
+        button = types.InlineKeyboardButton(
+            text="Уже 15 финалистов 🛑",
+            callback_data=f"max_finalist_reached"
+        )
     inline_keyboard.add(
         button,
         types.InlineKeyboardButton(
@@ -148,3 +155,8 @@ async def save_finalist(callback: types.CallbackQuery):
         )
     )
     await callback.message.edit_reply_markup(inline_keyboard)
+
+
+@dp.callback_query_handler(Text("max_finalist_reached"))
+async def max_finalists(callback: types.CallbackQuery):
+    await callback.answer('Уже 15 финалистов!')
