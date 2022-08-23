@@ -1,5 +1,4 @@
 import requests
-from io import BytesIO
 
 URL_TEMPLATE = "https://teacherofrussia.ru/api/competitors?year=2022"
 
