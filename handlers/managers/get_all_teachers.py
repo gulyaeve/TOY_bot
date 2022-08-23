@@ -69,13 +69,14 @@ async def get_finalists_for_letter(callback: types.CallbackQuery):
 async def get_teacher_info(callback: types.CallbackQuery):
     teacher_id = int(callback.data.split('=')[1])
     teacher = await teachers.select_teacher(id=teacher_id)
+    count_finalists = await teachers.count_finalists()
     inline_keyboard = types.InlineKeyboardMarkup(row_width=1)
     button_finalist_on = types.InlineKeyboardButton(
-            text="Сделать финалистом 🏁",
+            text=f"({count_finalists}/15) Сделать финалистом 🏁",
             callback_data=f"make_finalist={teacher['id']}"
         )
     button_finalist_off = types.InlineKeyboardButton(
-            text="Убрать финалиста ❌",
+            text=f"({count_finalists}/15) Убрать финалиста ❌",
             callback_data=f"delete_finalist={teacher['id']}"
         )
     check_finalist = await teachers.check_finalist(teacher['id'])
@@ -104,16 +105,17 @@ async def save_finalist(callback: types.CallbackQuery):
     teacher_id = int(callback.data.split('=')[1])
     teacher = await teachers.select_teacher(id=teacher_id)
     inline_keyboard = types.InlineKeyboardMarkup(row_width=1)
-    button_finalist_on = types.InlineKeyboardButton(
-        text="Сделать финалистом 🏁",
-        callback_data=f"make_finalist={teacher['id']}"
-    )
-    button_finalist_off = types.InlineKeyboardButton(
-        text="Убрать финалиста ❌",
-        callback_data=f"delete_finalist={teacher['id']}"
-    )
     try:
         await teachers.save_finalist(id=teacher_id)
+        count_finalists = await teachers.count_finalists()
+        button_finalist_on = types.InlineKeyboardButton(
+            text=f"({count_finalists}/15) Сделать финалистом 🏁",
+            callback_data=f"make_finalist={teacher['id']}"
+        )
+        button_finalist_off = types.InlineKeyboardButton(
+            text=f"({count_finalists}/15) Убрать финалиста ❌",
+            callback_data=f"delete_finalist={teacher['id']}"
+        )
         check_finalist = await teachers.check_finalist(teacher['id'])
         button = button_finalist_on if check_finalist is not True else button_finalist_off
     except MaxFinalistReached:
@@ -136,13 +138,14 @@ async def save_finalist(callback: types.CallbackQuery):
     teacher_id = int(callback.data.split('=')[1])
     teacher = await teachers.select_teacher(id=teacher_id)
     await teachers.delete_finalist(id=teacher_id)
+    count_finalists = await teachers.count_finalists()
     inline_keyboard = types.InlineKeyboardMarkup(row_width=1)
     button_finalist_on = types.InlineKeyboardButton(
-        text="Сделать финалистом 🏁",
+        text=f"({count_finalists}/15) Сделать финалистом 🏁",
         callback_data=f"make_finalist={teacher['id']}"
     )
     button_finalist_off = types.InlineKeyboardButton(
-        text="Убрать финалиста ❌",
+        text=f"({count_finalists}/15) Убрать финалиста ❌",
         callback_data=f"delete_finalist={teacher['id']}"
     )
     check_finalist = await teachers.check_finalist(teacher['id'])
