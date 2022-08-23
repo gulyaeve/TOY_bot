@@ -31,7 +31,7 @@ class Teachers(Database):
         );
         CREATE TABLE IF NOT EXISTS parameters (
             id serial NOT NULL UNIQUE,
-            description text,
+            description text UNIQUE,
             value character varying(255)
         );
         """
