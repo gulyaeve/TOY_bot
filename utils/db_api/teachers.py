@@ -48,7 +48,7 @@ class Teachers(Database):
         return await self.execute(sql, file_id, id, execute=True)
 
     async def select_all_teachers(self) -> list[asyncpg.Record]:
-        sql = "SELECT * FROM teachers"
+        sql = "SELECT * FROM teachers ORDER BY full_name ASC"
         return await self.execute(sql, fetch=True)
 
     async def select_teacher(self, **kwargs) -> asyncpg.Record:
