@@ -92,6 +92,10 @@ class Teachers(Database):
     async def select_parameter(self, description: str) -> str:
         sql = "SELECT value FROM parameters WHERE description=$1"
         return await self.execute(sql, description, fetchval=True)
+
+    async def get_photo(self, id: int) -> bytes:
+        sql = "SELECT photo_raw_file FROM teachers WHERE id=$1"
+        return await self.execute(sql, id, fetchval=True)
     #
     # async def delete_users(self):
     #     await self.execute("DELETE FROM users WHERE TRUE", execute=True)

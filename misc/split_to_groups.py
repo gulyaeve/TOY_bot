@@ -1,4 +1,8 @@
+import asyncio
+
 from PIL import Image
+
+from loader import teachers
 
 
 def image_process(i):
@@ -9,3 +13,12 @@ def image_process(i):
         for color in j:
             res = (res + color) % 3
     return res + 1
+
+
+async def main():
+    image = await teachers.get_photo(1998)
+    result = image_process(image)
+    print(result)
+
+
+asyncio.run(main())
