@@ -136,7 +136,7 @@ async def save_finalist(callback: types.CallbackQuery):
 
 
 @dp.callback_query_handler(Regexp('delete_finalist=([0-9]*)'))
-async def save_finalist(callback: types.CallbackQuery):
+async def delete_finalist(callback: types.CallbackQuery):
     teacher_id = int(callback.data.split('=')[1])
     teacher = await teachers.select_teacher(id=teacher_id)
     max_finalists = await teachers.select_parameter('max_finalists')
