@@ -1,4 +1,5 @@
 import asyncio
+from io import BytesIO
 
 from PIL import Image
 
@@ -6,7 +7,7 @@ from loader import teachers
 
 
 def image_process(i):
-    img = Image.open(i)
+    img = Image.open(BytesIO(i))
     pixels = list(img.getdata())
     res = 0
     for j in pixels[::10]:
