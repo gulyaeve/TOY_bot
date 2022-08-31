@@ -14,11 +14,11 @@ def image_process(i):
             res = (res + color) % 3
     return res + 1
 
-
-async def main():
-    image = await teachers.get_photo(1998)
-    result = image_process(image)
-    print(result)
-
-
-asyncio.run(main())
+#
+# async def main():
+#     image = await teachers.get_photo(1998)
+#     result = image_process(image)
+#     print(result)
+#
+#
+# asyncio.run(main())
