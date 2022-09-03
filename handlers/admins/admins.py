@@ -6,7 +6,7 @@ from aiogram.dispatcher import FSMContext
 from config import Config
 from filters import AdminCheck
 from keyboards.admin import AdminsMenu
-from loader import dp, messages, bot
+from loader import dp, messages, bot, teachers
 
 
 async def notify_admins(message: str):
@@ -28,3 +28,12 @@ async def admin_start(callback: types.CallbackQuery, state: FSMContext):
     log(INFO, f"{callback.message.from_user.id=} passed to admin menu")
     await callback.message.edit_text(await messages.get_message("admin_menu"), reply_markup=AdminsMenu.admin_main_menu)
     await state.finish()
+
+
+@dp.message_handler(AdminCheck(), commands=['save_photo'])
+async def save_photo(message: types.Message):
+    teachers_list = await teachers.select_all_teachers()
+    for teacher in teachers_list:
+        file = await dp.bot.get_file(teacher['photo_file_id'])
+        await dp.bot.download_file(file, f"images/{teacher['photo_file_id']}.png", timeout=1)
+    await message.answer('photos saved')
