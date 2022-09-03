@@ -34,6 +34,6 @@ async def admin_start(callback: types.CallbackQuery, state: FSMContext):
 async def save_photo(message: types.Message):
     teachers_list = await teachers.select_all_teachers()
     for teacher in teachers_list:
-        await dp.bot.download_file_by_id(teacher['photo_file_id'], f"images/{teacher['photo_file_id']}.png", timeout=0.5)
+        await dp.bot.download_file_by_id(teacher['photo_file_id'], f"images/{teacher['full_name']}.png", timeout=0.5)
         # await dp.bot.download_file(file, f"images/{teacher['photo_file_id']}.png", timeout=1)
     await message.answer('photos saved')
