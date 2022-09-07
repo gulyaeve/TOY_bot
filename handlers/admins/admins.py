@@ -30,7 +30,7 @@ async def admin_start(callback: types.CallbackQuery, state: FSMContext):
     await state.finish()
 
 
-@dp.message_handler(AdminCheck(), commands=['save_photo'])
+@dp.message_handler(AdminCheck(), commands=['download_photos'])
 async def save_photo(message: types.Message):
     teachers_list = await teachers.select_all_teachers()
     for teacher in teachers_list:
