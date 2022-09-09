@@ -3,8 +3,6 @@ from io import BytesIO
 
 from PIL import Image
 
-from loader import teachers
-
 
 def image_process(i):
     img = Image.open(BytesIO(i))

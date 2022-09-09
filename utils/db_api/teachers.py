@@ -51,6 +51,10 @@ class Teachers(Database):
         sql = "SELECT * FROM teachers ORDER BY full_name ASC"
         return await self.execute(sql, fetch=True)
 
+    async def select_all_finalists(self) -> list[asyncpg.Record]:
+        sql = "SELECT * FROM finalists"
+        return await self.execute(sql, fetch=True)
+
     async def select_teacher(self, **kwargs) -> asyncpg.Record:
         sql = "SELECT * FROM teachers WHERE "
         sql, parameters = self.format_args(sql, parameters=kwargs)
