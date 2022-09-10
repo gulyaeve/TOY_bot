@@ -71,10 +71,12 @@ async def send_group_list(message: types.Message):
                 group_2 += f"{finalist_info}\n"
             if finalist['group_id'] == 3:
                 group_3 += f"{finalist_info}\n"
-        msg += f"<b>Группа 1:</b>\n{group_1}\n" \
-               f"<b>Группа 2:</b>\n{group_2}\n" \
-               f"<b>Группа 3:</b>\n{group_3}\n" \
-               f"<b>Без группы:</b>\n{group_0}"
+        if group_0 == "":
+            msg = f"<b>Группа 1:</b>\n{group_1}\n" \
+                  f"<b>Группа 2:</b>\n{group_2}\n" \
+                  f"<b>Группа 3:</b>\n{group_3}\n"
+        else:
+            msg = f"<b>Без группы:</b>\n{group_0}"
         await message.answer(msg)
     else:
         answer = await messages.get_message("not_finalists")
