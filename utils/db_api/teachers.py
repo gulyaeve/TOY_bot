@@ -47,12 +47,16 @@ class Teachers(Database):
         sql = "UPDATE teachers SET photo_file_id=$1 WHERE id=$2"
         return await self.execute(sql, file_id, id, execute=True)
 
+    async def update_finalist_group(self, finalist_id: int, group_id: int):
+        sql = "UPDATE finalists SET group_id=$2 WHERE id=$1"
+        return await self.execute(sql, finalist_id, group_id, execute=True)
+
     async def select_all_teachers(self) -> list[asyncpg.Record]:
         sql = "SELECT * FROM teachers ORDER BY full_name ASC"
         return await self.execute(sql, fetch=True)
 
     async def select_all_finalists(self) -> list[asyncpg.Record]:
-        sql = "SELECT * FROM finalists"
+        sql = "SELECT * FROM finalists ORDER BY group_id ASC"
         return await self.execute(sql, fetch=True)
 
     async def select_teacher(self, **kwargs) -> asyncpg.Record:
