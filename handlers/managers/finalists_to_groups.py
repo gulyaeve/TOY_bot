@@ -56,19 +56,25 @@ async def send_group_list(message: types.Message):
     max_finalists = await teachers.select_parameter('max_finalists')
     if all_finalists.__len__() == int(max_finalists):
         msg = ""
+        group_0 = ""
         group_1 = ""
         group_2 = ""
         group_3 = ""
         for finalist in all_finalists:
             finalist_data = await teachers.select_teacher(id=finalist['id'])
             finalist_info = f"{finalist_data['full_name']}"
+            if finalist['group_id'] == 0:
+                group_0 += f"{finalist_info}\n"
             if finalist['group_id'] == 1:
                 group_1 += f"{finalist_info}\n"
             if finalist['group_id'] == 2:
                 group_2 += f"{finalist_info}\n"
             if finalist['group_id'] == 3:
                 group_3 += f"{finalist_info}\n"
-        msg += f"<b>Группа 1:</b>\n{group_1}\n<b>Группа 2:</b>\n{group_2}\n<b>Группа 3:</b>\n{group_3}"
+        msg += f"<b>Группа 1:</b>\n{group_1}\n" \
+               f"<b>Группа 2:</b>\n{group_2}\n" \
+               f"<b>Группа 3:</b>\n{group_3}\n" \
+               f"<b>Без группы:</b>\n{group_0}"
         await message.answer(msg)
     else:
         answer = await messages.get_message("not_finalists")
