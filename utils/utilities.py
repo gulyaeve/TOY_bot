@@ -20,7 +20,6 @@ async def get_users_file() -> types.InputFile:
         "   №", "full_name", "username", "telegram_id"
     )
     for user in list_users:
-        log(INFO, user)
         answer += "{:4}. {:25} {:20} {:11}\n".format(
             user['id'],
             user['full_name'],
