@@ -50,7 +50,7 @@ class Users(Database):
         sql = "UPDATE users SET username=$1 WHERE telegram_id=$2"
         return await self.execute(sql, username, telegram_id, execute=True)
 
-    async def select_all_users(self) -> list:
+    async def select_all_users(self) -> list[asyncpg.Record]:
         sql = "SELECT * FROM users"
         return await self.execute(sql, fetch=True)
 
