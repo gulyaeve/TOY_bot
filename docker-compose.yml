@@ -15,6 +15,7 @@ services:
       - ./postgres/config:/etc/postgresql
       - ./postgres/logs:/var/log/postgresql
       - ./postgres/lib:/var/lib/postgresql
+      - ./postgres/data:/var/lib/postgresql/12/main
 
   redis:
     image: redis:latest
@@ -40,6 +41,17 @@ services:
     depends_on:
       - db
       - redis
+
+  myapp:
+    image: docker.io/bitnami/laravel:9
+    ports:
+      - '8000:8000'
+    env_file:
+      - ".env.dev"
+    volumes:
+      - './my-project:/app'
+    depends_on:
+      - db
 
 networks:
   botnet:
