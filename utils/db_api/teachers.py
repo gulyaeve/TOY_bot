@@ -101,6 +101,10 @@ class Teachers(Database):
         sql = "SELECT value FROM parameters WHERE description=$1"
         return await self.execute(sql, description, fetchval=True)
 
+    async def update_parameter(self, description: str, new_value: str):
+        sql = "UPDATE parameters SET value=$1 WHERE description=$1"
+        return await self.execute(sql, description, new_value, execute=True)
+
     async def get_photo(self, id: int) -> bytes:
         sql = "SELECT photo_raw_file FROM teachers WHERE id=$1"
         return await self.execute(sql, id, fetchval=True)
