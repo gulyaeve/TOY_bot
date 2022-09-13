@@ -32,7 +32,6 @@ async def start_vote(message: types.Message):
             callback_data='vote_0'
         )
     )
-
     await message.answer('Выберите группу для начала голосования:', reply_markup=inline_keyboard)
 
 
