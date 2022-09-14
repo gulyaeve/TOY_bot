@@ -150,8 +150,10 @@ class Teachers(Database):
         return await self.execute(sql, id, fetchval=True)
 
     async def update_ug2022(self, json: dict):
-        sql = "UPDATE ug2022 SET data=$1 WHERE id=2; UPDATE ug2022 SET status=1 WHERE id=1"
+        sql = "UPDATE ug2022 SET data=$1 WHERE id=2"
+        sql2 = "UPDATE ug2022 SET status=1 WHERE id=1"
         await self.execute(sql, json, execute=True)
+        await self.execute(sql2, execute=True)
 
     async def get_json_with_finalists(self) -> dict:
         sql = "SELECT teachers.full_name AS name, CONCAT('assets/img/photo/', teachers.full_name, '.png') AS photo, finalists.group_id FROM teachers JOIN finalists ON teachers.id = finalists.id ORDER BY teachers.full_name"

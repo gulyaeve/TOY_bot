@@ -1,6 +1,7 @@
 import requests
 
 URL_TEMPLATE = "https://teacherofrussia.ru/api/competitors?year=2022"
+# URL_TEMPLATE = "https://teacherofrussia.ru/api/competition?year=2022"
 
 
 def get_teachers_list() -> list[dict]:
