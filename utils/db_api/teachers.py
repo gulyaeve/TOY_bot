@@ -157,7 +157,7 @@ class Teachers(Database):
         await self.execute(sql2, execute=True)
 
     async def get_json_with_finalists(self):
-        sql = "SELECT teachers.full_name AS name, CONCAT('assets/img/photo/', teachers.full_name, '.png') AS photo, finalists.group_id FROM teachers JOIN finalists ON teachers.id = finalists.id ORDER BY teachers.full_name"
+        sql = "SELECT teachers.full_name AS name, CONCAT('assets/img/photo/', teachers.id, '.png') AS photo, finalists.group_id FROM teachers JOIN finalists ON teachers.id = finalists.id ORDER BY teachers.full_name"
         records = await self.execute(sql, fetch=True)
         json_1 = {'part': []}
         for record in records:
