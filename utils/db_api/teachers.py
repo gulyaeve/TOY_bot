@@ -156,14 +156,15 @@ class Teachers(Database):
         await self.execute(sql, json, execute=True)
         await self.execute(sql2, execute=True)
 
-    async def get_json_with_finalists(self) -> dict:
+    async def get_json_with_finalists(self):
         sql = "SELECT teachers.full_name AS name, CONCAT('assets/img/photo/', teachers.full_name, '.png') AS photo, finalists.group_id FROM teachers JOIN finalists ON teachers.id = finalists.id ORDER BY teachers.full_name"
         records = await self.execute(sql, fetch=True)
-        json_1 = {"part": []}
+        json_1 = {'part': []}
         for record in records:
             log(INFO, record)
-            json_1['part'].append({"name": record['name'], "photo": record['photo'], "group": record['group_id']})
-        return json.loads(str(json_1))
+            json_1['part'].append({'name': record['name'], 'photo': record['photo'], 'group': record['group_id']})
+        log(INFO, json_1)
+        return json.dumps(json_1)
     #
     # async def delete_users(self):
     #     await self.execute("DELETE FROM users WHERE TRUE", execute=True)
