@@ -149,7 +149,7 @@ class Teachers(Database):
         sql = "SELECT photo_raw_file FROM teachers WHERE id=$1"
         return await self.execute(sql, id, fetchval=True)
 
-    async def update_ug2022(self, json: dict):
+    async def update_ug2022(self, json: str):
         sql = "UPDATE ug2022 SET data=$1 WHERE id=2"
         sql2 = "UPDATE ug2022 SET status=1 WHERE id=1"
         await self.execute(sql, json, execute=True)
