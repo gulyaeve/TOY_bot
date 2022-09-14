@@ -10,6 +10,6 @@ from loader import dp, teachers
 async def start_web(message: types.Message):
     json = await teachers.get_json_with_finalists()
     log(INFO, json)
-    await teachers.update_ug2022(str(json))
+    await teachers.update_ug2022(json)
     await message.answer(f"Смотри анимацию")
 
