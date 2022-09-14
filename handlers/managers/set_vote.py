@@ -5,7 +5,7 @@ from filters import ManagerCheck
 from loader import dp, teachers
 
 
-@dp.message_handler(ManagerCheck(), commands=['vote'])
+@dp.message_handler(ManagerCheck(), commands=['start_vote'])
 async def start_vote(message: types.Message):
     inline_keyboard = types.InlineKeyboardMarkup()
     inline_keyboard.add(

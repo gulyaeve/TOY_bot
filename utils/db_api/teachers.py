@@ -78,6 +78,15 @@ class Teachers(Database):
         sql, parameters = self.format_args(sql, parameters=kwargs)
         return await self.execute(sql, *parameters, fetchrow=True)
 
+    async def select_teachers_by_finalist_group(self, group_id: int) -> list[asyncpg.Record]:
+        sql = "SELECT id FROM finalists WHERE group_id=$1"
+        teachers = await self.execute(sql, group_id, fetch=True)
+        results = []
+        for record in teachers:
+            teacher = await self.select_teacher(id=record['id'])
+            results.append(teacher)
+        return results
+
     async def count_finalists(self):
         sql = "SELECT COUNT(*) FROM finalists"
         return await self.execute(sql, fetchval=True)
@@ -102,7 +111,7 @@ class Teachers(Database):
         return await self.execute(sql, description, fetchval=True)
 
     async def update_parameter(self, description: str, new_value: str):
-        sql = "UPDATE parameters SET value=$1 WHERE description=$1"
+        sql = "UPDATE parameters SET value=$2 WHERE description=$1"
         return await self.execute(sql, description, new_value, execute=True)
 
     async def get_photo(self, id: int) -> bytes:
