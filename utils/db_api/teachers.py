@@ -158,10 +158,10 @@ class Teachers(Database):
     async def get_json_with_finalists(self) -> dict:
         sql = "SELECT teachers.full_name AS name, CONCAT('assets/img/photo/', teachers.full_name, '.png') AS photo, finalists.group_id FROM teachers JOIN finalists ON teachers.id = finalists.id ORDER BY teachers.full_name"
         records = await self.execute(sql, fetch=True)
-        json = {'part': []}
+        json = {"part": []}
         for record in records:
             log(INFO, record)
-            json['part'].append({'name': record['name'], 'photo': record['photo'], 'group': record['group_id']})
+            json['part'].append({"name": record['name'], "photo": record['photo'], "group": record['group_id']})
         return json
     #
     # async def delete_users(self):
