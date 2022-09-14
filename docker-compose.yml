@@ -10,7 +10,7 @@ services:
       - botnet
     restart: always
     ports:
-      - 5434:5432
+      - 5432:5432
     volumes:
       - ./postgres/config:/etc/postgresql
       - ./postgres/logs:/var/log/postgresql
@@ -41,19 +41,6 @@ services:
     depends_on:
       - db
       - redis
-
-  myapp:
-    image: docker.io/bitnami/laravel:9
-    ports:
-      - '8000:8000'
-    networks:
-      - botnet
-    env_file:
-      - ".env.dev"
-    volumes:
-      - './my-project:/app:z'
-    depends_on:
-      - db
 
 networks:
   botnet:
