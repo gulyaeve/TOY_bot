@@ -162,7 +162,7 @@ class Teachers(Database):
         json_1 = {'part': []}
         for record in records:
             log(INFO, record)
-            json_1['part'].append({'name': record['name'], 'photo': record['photo'], 'group': record['group_id']})
+            json_1['part'].append({'name': record['name'], 'photo': record['photo'], 'group': record['group_id']-1})
         log(INFO, json_1)
         return json.dumps(json_1)
     #
