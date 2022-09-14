@@ -57,7 +57,7 @@ async def send_card_for_vote(callback: types.CallbackQuery):
     inline_keyboard.add(
         types.InlineKeyboardButton(
             text='Проголосовать',
-            callback_data=f"vote_to={teacher_id}",
+            callback_data=f"vote_to={group_id}={teacher_id}",
         )
     )
     inline_keyboard.add(
@@ -91,3 +91,10 @@ async def back_to_group(callback: types.CallbackQuery):
             )
         )
     await callback.message.answer("Выберите участника", reply_markup=keyboard_group)
+
+
+@dp.callback_query_handler(Regexp("vote_to=([0-9]*)=([0-9]*)"))
+async def make_vote(callback: types.CallbackQuery):
+    group_id = int(callback.data.split('=')[1])
+    teacher_id = int(callback.data.split('=')[2])
+

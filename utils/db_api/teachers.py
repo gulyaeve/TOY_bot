@@ -34,6 +34,24 @@ class Teachers(Database):
             description text UNIQUE,
             value character varying(255)
         );
+        CREATE TABLE IF NOT EXISTS poll_1 (
+            id serial NOT NULL UNIQUE,
+            user_id int NOT NULL UNIQUE,
+            teacher_id int NOT NULL,
+            time_created timestamp without time zone DEFAULT timezone('utc'::text, now())
+        );
+        CREATE TABLE IF NOT EXISTS poll_2 (
+            id serial NOT NULL UNIQUE,
+            user_id int NOT NULL UNIQUE,
+            teacher_id int NOT NULL,
+            time_created timestamp without time zone DEFAULT timezone('utc'::text, now())
+        );
+        CREATE TABLE IF NOT EXISTS poll_3 (
+            id serial NOT NULL UNIQUE,
+            user_id int NOT NULL UNIQUE,
+            teacher_id int NOT NULL,
+            time_created timestamp without time zone DEFAULT timezone('utc'::text, now())
+        );
         """
         await self.execute(sql, execute=True)
 
@@ -86,6 +104,18 @@ class Teachers(Database):
             teacher = await self.select_teacher(id=record['id'])
             results.append(teacher)
         return results
+
+    async def vote_poll_1(self, user_id: int, teacher_id: int):
+        sql = "INSERT INTO poll_1 (user_id, teacher_id) VALUES($1, $2)"
+        return await self.execute(sql, user_id, teacher_id, execute=True)
+
+    async def vote_poll_2(self, user_id: int, teacher_id: int):
+        sql = "INSERT INTO poll_2 (user_id, teacher_id) VALUES($1, $2)"
+        return await self.execute(sql, user_id, teacher_id, execute=True)
+
+    async def vote_poll_3(self, user_id: int, teacher_id: int):
+        sql = "INSERT INTO poll_3 (user_id, teacher_id) VALUES($1, $2)"
+        return await self.execute(sql, user_id, teacher_id, execute=True)
 
     async def count_finalists(self):
         sql = "SELECT COUNT(*) FROM finalists"
