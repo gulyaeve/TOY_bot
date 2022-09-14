@@ -1,4 +1,5 @@
 import asyncio
+from logging import log, INFO
 
 import asyncpg
 
@@ -147,6 +148,19 @@ class Teachers(Database):
     async def get_photo(self, id: int) -> bytes:
         sql = "SELECT photo_raw_file FROM teachers WHERE id=$1"
         return await self.execute(sql, id, fetchval=True)
+
+    async def update_ug2022(self, json: dict):
+        sql = "UPDATE ug2022 SET data=$1 WHERE id=2; UPDATE ug2022 SET status=1 WHERE id=1"
+        await self.execute(sql, json, execute=True)
+
+    async def get_json_with_finalists(self) -> dict:
+        sql = "SELECT teachers.full_name AS name, CONCAT('assets/img/photo/', teachers.full_name, '.png') AS photo, finalists.group_id FROM teachers JOIN finalists ON teachers.id = finalists.id ORDER BY teachers.full_name"
+        records = await self.execute(sql, fetch=True)
+        json = {'part': []}
+        for record in records:
+            log(INFO, record)
+            json['part'].append({'name': record['name'], 'photo': record['photo'], 'group': record['group_id']})
+        return json
     #
     # async def delete_users(self):
     #     await self.execute("DELETE FROM users WHERE TRUE", execute=True)
