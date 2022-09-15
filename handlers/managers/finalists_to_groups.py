@@ -1,12 +1,15 @@
 import asyncio
+import io
 from io import BytesIO
+from logging import log, INFO
 
 from aiogram import types
 
 from filters import ManagerCheck
 from loader import dp, teachers, messages
-import random
+# import random
 import numpy
+from misc.groups import list_of_images_classificator
 
 
 @dp.message_handler(ManagerCheck(), commands=['finalists'])
@@ -35,15 +38,23 @@ async def split_to_groups(message: types.Message):
     all_finalists = await teachers.select_all_finalists()
     max_finalists = await teachers.select_parameter('max_finalists')
     if all_finalists.__len__() == int(max_finalists):
+        photos = []
         ids = []
         for finalist in all_finalists:
             ids.append(finalist['id'])
-        random.shuffle(ids)
-        splits = numpy.array_split(ids, 3)
-        for idx, array in enumerate(splits):
+            teacher = await teachers.select_teacher(id=finalist['id'])
+            photo = io.BytesIO(teacher['photo_raw_file'])
+            photos.append(photo)
+        list_of_groups = list_of_images_classificator(photos)
+        result = []
+        for i in list_of_groups:
+            result.append(ids[i])
+        splits = numpy.array_split(result, 3)
+        for idx, result in enumerate(splits):
             group_id = idx + 1
-            for finalist in list(array):
+            for finalist in list(result):
                 await teachers.update_finalist_group(finalist, group_id)
+        log(INFO, f"{message.from_user.id=} определил группы")
         await message.answer("Финалисты поделены на группы, для просмотра групп: <b>/groups</b>")
     else:
         answer = await messages.get_message("not_finalists")
