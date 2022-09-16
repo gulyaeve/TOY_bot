@@ -66,3 +66,9 @@ async def vote_1(callback: types.CallbackQuery):
 async def vote_1(callback: types.CallbackQuery):
     await teachers.update_parameter('vote', '0')
     await callback.message.answer('Остановлено голосование')
+
+
+@dp.message_handler(ManagerCheck(), commands=['count_votes'])
+async def count_votes(message: types.Message):
+    votes = await teachers.count_votes()
+    await message.answer(f"Количество голосов: {votes}")

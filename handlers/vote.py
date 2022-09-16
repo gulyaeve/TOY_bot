@@ -96,11 +96,16 @@ async def back_to_group(callback: types.CallbackQuery):
 
 @dp.callback_query_handler(Regexp("vote_to=([0-9]*)"))
 async def make_vote(callback: types.CallbackQuery):
-    user = await users.select_user(telegram_id=callback.from_user.id)
-    teacher_id = int(callback.data.split('=')[1])
-    result = await teachers.make_vote(user['id'], teacher_id)
-    if result is not None:
-        await callback.message.answer(f"✅ Вы успешно проголосовали!")
-    else:
-        await callback.message.answer(f"❌ Вы уже голосовали!")
+    await callback.message.delete()
+    vote = await teachers.select_parameter('vote')
+    if vote == "0":
+        await callback.message.answer('Голосование сейчас не проводится')
+    elif vote == "1":
+        user = await users.select_user(telegram_id=callback.from_user.id)
+        teacher_id = int(callback.data.split('=')[1])
+        result = await teachers.make_vote(user['id'], teacher_id)
+        if result is not None:
+            await callback.message.answer(f"✅ Вы успешно проголосовали!")
+        else:
+            await callback.message.answer(f"❌ Вы уже голосовали!")
 
