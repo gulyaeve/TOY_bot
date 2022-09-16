@@ -1,9 +1,10 @@
+import io
 from logging import log, INFO
 
 from aiogram import types
 from aiogram.dispatcher.filters import Text, Regexp
 
-from loader import dp, teachers, messages
+from loader import dp, teachers, messages, users
 
 
 @dp.message_handler(commands=['vote'])
@@ -13,57 +14,57 @@ async def make_vote(message: types.Message):
     if vote == "0":
         await message.answer('Голосование сейчас не проводится')
     if vote == "1":
-        teachers_in_group_1 = await teachers.select_teachers_by_finalist_group(group_id=1)
+        teachers_in_group_1 = await teachers.select_teachers_by_finalist_group()
         keyboard_group_1 = types.InlineKeyboardMarkup()
         for teacher in teachers_in_group_1:
             keyboard_group_1.add(
                 types.InlineKeyboardButton(
                     text=f"{teacher['full_name']}",
-                    callback_data=f"select_teacher_before_vote=1={teacher['id']}",
+                    callback_data=f"select_teacher_before_vote={teacher['id']}",
                 )
             )
-        await message.answer("Выберите участника", reply_markup=keyboard_group_1)
-    if vote == "2":
-        teachers_in_group_2 = await teachers.select_teachers_by_finalist_group(group_id=2)
-        keyboard_group_2 = types.InlineKeyboardMarkup()
-        for teacher in teachers_in_group_2:
-            keyboard_group_2.add(
-                types.InlineKeyboardButton(
-                    text=f"{teacher['full_name']}",
-                    callback_data=f"select_teacher_before_vote=2={teacher['id']}",
-                )
-            )
-        await message.answer("Выберите участника", reply_markup=keyboard_group_2)
-    if vote == "3":
-        teachers_in_group_3 = await teachers.select_teachers_by_finalist_group(group_id=3)
-        keyboard_group_3 = types.InlineKeyboardMarkup()
-        for teacher in teachers_in_group_3:
-            keyboard_group_3.add(
-                types.InlineKeyboardButton(
-                    text=f"{teacher['full_name']}",
-                    callback_data=f"select_teacher_before_vote=3={teacher['id']}",
-                )
-            )
-        await message.answer("Выберите участника", reply_markup=keyboard_group_3)
+        await message.answer("Выберите участника:", reply_markup=keyboard_group_1)
+    # if vote == "2":
+    #     teachers_in_group_2 = await teachers.select_teachers_by_finalist_group(group_id=2)
+    #     keyboard_group_2 = types.InlineKeyboardMarkup()
+    #     for teacher in teachers_in_group_2:
+    #         keyboard_group_2.add(
+    #             types.InlineKeyboardButton(
+    #                 text=f"{teacher['full_name']}",
+    #                 callback_data=f"select_teacher_before_vote=2={teacher['id']}",
+    #             )
+    #         )
+    #     await message.answer("Выберите участника", reply_markup=keyboard_group_2)
+    # if vote == "3":
+    #     teachers_in_group_3 = await teachers.select_teachers_by_finalist_group(group_id=3)
+    #     keyboard_group_3 = types.InlineKeyboardMarkup()
+    #     for teacher in teachers_in_group_3:
+    #         keyboard_group_3.add(
+    #             types.InlineKeyboardButton(
+    #                 text=f"{teacher['full_name']}",
+    #                 callback_data=f"select_teacher_before_vote=3={teacher['id']}",
+    #             )
+    #         )
+    #     await message.answer("Выберите участника", reply_markup=keyboard_group_3)
 
 
-@dp.callback_query_handler(Regexp("select_teacher_before_vote=([0-9]*)=([0-9]*)"))
+@dp.callback_query_handler(Regexp("select_teacher_before_vote=([0-9]*)"))
 async def send_card_for_vote(callback: types.CallbackQuery):
-    group_id = int(callback.data.split('=')[1])
-    teacher_id = int(callback.data.split('=')[2])
+    # group_id = int(callback.data.split('=')[1])
+    teacher_id = int(callback.data.split('=')[1])
     teacher = await teachers.select_teacher(id=teacher_id)
     await callback.message.delete()
     inline_keyboard = types.InlineKeyboardMarkup()
     inline_keyboard.add(
         types.InlineKeyboardButton(
             text='Проголосовать',
-            callback_data=f"vote_to={group_id}={teacher_id}",
+            callback_data=f"vote_to={teacher_id}",
         )
     )
     inline_keyboard.add(
         types.InlineKeyboardButton(
             text='Назад',
-            callback_data=f"back_to_group={group_id}",
+            callback_data=f"back_to_group",
         )
     )
     card_info = await messages.get_message('card_info')
@@ -77,24 +78,29 @@ async def send_card_for_vote(callback: types.CallbackQuery):
     )
 
 
-@dp.callback_query_handler(Regexp("back_to_group=([0-9]*)"))
+@dp.callback_query_handler(Regexp("back_to_group"))
 async def back_to_group(callback: types.CallbackQuery):
     await callback.message.delete()
-    group_id = int(callback.data.split('=')[1])
-    teachers_in_group = await teachers.select_teachers_by_finalist_group(group_id=group_id)
+    # group_id = int(callback.data.split('=')[1])
+    teachers_in_group = await teachers.select_teachers_by_finalist_group()
     keyboard_group = types.InlineKeyboardMarkup()
     for teacher in teachers_in_group:
         keyboard_group.add(
             types.InlineKeyboardButton(
                 text=f"{teacher['full_name']}",
-                callback_data=f"select_teacher_before_vote={group_id}={teacher['id']}",
+                callback_data=f"select_teacher_before_vote={teacher['id']}",
             )
         )
     await callback.message.answer("Выберите участника", reply_markup=keyboard_group)
 
 
-@dp.callback_query_handler(Regexp("vote_to=([0-9]*)=([0-9]*)"))
+@dp.callback_query_handler(Regexp("vote_to=([0-9]*)"))
 async def make_vote(callback: types.CallbackQuery):
-    group_id = int(callback.data.split('=')[1])
-    teacher_id = int(callback.data.split('=')[2])
+    user = await users.select_user(telegram_id=callback.from_user.id)
+    teacher_id = int(callback.data.split('=')[1])
+    result = await teachers.make_vote(user['id'], teacher_id)
+    if result is not None:
+        await callback.message.answer(f"✅ Вы успешно проголосовали!")
+    else:
+        await callback.message.answer(f"❌ Вы уже голосовали!")
 

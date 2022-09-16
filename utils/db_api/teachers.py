@@ -42,18 +42,6 @@ class Teachers(Database):
             teacher_id int NOT NULL,
             time_created timestamp without time zone DEFAULT timezone('utc'::text, now())
         );
-        CREATE TABLE IF NOT EXISTS poll_2 (
-            id serial NOT NULL UNIQUE,
-            user_id int NOT NULL UNIQUE,
-            teacher_id int NOT NULL,
-            time_created timestamp without time zone DEFAULT timezone('utc'::text, now())
-        );
-        CREATE TABLE IF NOT EXISTS poll_3 (
-            id serial NOT NULL UNIQUE,
-            user_id int NOT NULL UNIQUE,
-            teacher_id int NOT NULL,
-            time_created timestamp without time zone DEFAULT timezone('utc'::text, now())
-        );
         """
         await self.execute(sql, execute=True)
 
@@ -98,26 +86,29 @@ class Teachers(Database):
         sql, parameters = self.format_args(sql, parameters=kwargs)
         return await self.execute(sql, *parameters, fetchrow=True)
 
-    async def select_teachers_by_finalist_group(self, group_id: int) -> list[asyncpg.Record]:
-        sql = "SELECT id FROM finalists WHERE group_id=$1"
-        teachers = await self.execute(sql, group_id, fetch=True)
+    async def select_teachers_by_finalist_group(self) -> list[asyncpg.Record]:
+        sql = "SELECT id FROM finalists WHERE true"
+        teachers = await self.execute(sql, fetch=True)
         results = []
         for record in teachers:
             teacher = await self.select_teacher(id=record['id'])
             results.append(teacher)
         return results
 
-    async def vote_poll_1(self, user_id: int, teacher_id: int):
-        sql = "INSERT INTO poll_1 (user_id, teacher_id) VALUES($1, $2)"
-        return await self.execute(sql, user_id, teacher_id, execute=True)
+    async def make_vote(self, user_id: int, teacher_id: int):
+        try:
+            sql = "INSERT INTO poll_1 (user_id, teacher_id) VALUES($1, $2)"
+            return await self.execute(sql, user_id, teacher_id, execute=True)
+        except asyncpg.UniqueViolationError:
+            return None
 
-    async def vote_poll_2(self, user_id: int, teacher_id: int):
-        sql = "INSERT INTO poll_2 (user_id, teacher_id) VALUES($1, $2)"
-        return await self.execute(sql, user_id, teacher_id, execute=True)
+    async def count_votes(self):
+        sql = "SELECT COUNT(*) FROM poll_1"
+        return await self.execute(sql, fetchval=True)
 
-    async def vote_poll_3(self, user_id: int, teacher_id: int):
-        sql = "INSERT INTO poll_3 (user_id, teacher_id) VALUES($1, $2)"
-        return await self.execute(sql, user_id, teacher_id, execute=True)
+    async def clear_votes(self):
+        sql = "TRUNCATE TABLE poll_1"
+        await self.execute(sql, execute=True)
 
     async def count_finalists(self):
         sql = "SELECT COUNT(*) FROM finalists"
