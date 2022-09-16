@@ -102,6 +102,10 @@ class Teachers(Database):
         except asyncpg.UniqueViolationError:
             return None
 
+    async def check_vote(self, user_id: int):
+        sql = "SELECT id FROM poll_1 where user_id=$1"
+        return await self.execute(sql, user_id, fetchval=True)
+
     async def count_votes(self):
         sql = "SELECT COUNT(*) FROM poll_1"
         return await self.execute(sql, fetchval=True)
