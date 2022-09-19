@@ -110,6 +110,12 @@ class Teachers(Database):
         sql = "SELECT COUNT(*) FROM poll_1"
         return await self.execute(sql, fetchval=True)
 
+    async def update_ug2022_3_on(self, value: int):
+        sql = "UPDATE ug2022 SET data=$1 WHERE id=3"
+        sql2 = "UPDATE ug2022 SET status=1 WHERE id=3"
+        await self.execute(sql2, execute=True)
+        await self.execute(sql, execute=True)
+
     async def clear_votes(self):
         sql = "TRUNCATE TABLE poll_1"
         await self.execute(sql, execute=True)
