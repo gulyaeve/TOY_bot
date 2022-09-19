@@ -23,6 +23,7 @@ async def make_vote(message: types.Message):
                     callback_data=f"select_teacher_before_vote={teacher['id']}",
                 )
             )
+        await message.answer('ВНИМАНИЕ! У вас будет одна попытка!')
         await message.answer("Выберите участника:", reply_markup=keyboard_group_1)
     # if vote == "2":
     #     teachers_in_group_2 = await teachers.select_teachers_by_finalist_group(group_id=2)

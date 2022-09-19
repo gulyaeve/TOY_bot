@@ -1,3 +1,4 @@
+import asyncio
 from logging import log, INFO
 
 from aiogram import types
@@ -43,6 +44,7 @@ async def vote_1(callback: types.CallbackQuery):
     await callback.message.answer('Голосование началось')
     users_to_send: list = await users.select_all_users()
     for user in users_to_send:
+        await asyncio.sleep(0.1)
         try:
             await dp.bot.send_message(user['telegram_id'], '⚡️⚡️⚡️\nГолосование началось <b>/vote</b>')
             log(INFO, f"ГОЛОСОВАНИЕ Рассылка успешно отправлена пользователю {user['telegram_id']}")
