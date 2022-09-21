@@ -70,6 +70,14 @@ async def vote_1(callback: types.CallbackQuery):
     await teachers.update_parameter('vote', '0')
     await teachers.update_ug2022_3_stop()
     await callback.message.answer('Остановлено голосование')
+    users_to_send: list = await users.select_all_users()
+    for user in users_to_send:
+        await asyncio.sleep(0.1)
+        try:
+            await dp.bot.send_message(user['telegram_id'], "Голосование завершено!")
+            log(INFO, f"ГОЛОСОВАНИЕ Рассылка успешно отправлена пользователю {user['telegram_id']}")
+        except:
+            log(INFO, f"ГОЛОСОВАНИЕ Ошибка при отправке рассылки пользователю {user['telegram_id']}")
 
 
 @dp.message_handler(ManagerCheck(), commands=['count_votes'])
