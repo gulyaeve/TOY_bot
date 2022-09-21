@@ -109,7 +109,8 @@ async def make_vote(callback: types.CallbackQuery):
     elif vote == "1":
         user = await users.select_user(telegram_id=callback.from_user.id)
         teacher_id = int(callback.data.split('=')[1])
-        result = await teachers.make_vote(user['id'], teacher_id)
+        await teachers.make_vote(user['id'], teacher_id)
+        await teachers.update_ug2022_3_on()
         inline_keyboard = types.InlineKeyboardMarkup()
         inline_keyboard.add(
             types.InlineKeyboardButton(

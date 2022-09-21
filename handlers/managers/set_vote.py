@@ -35,12 +35,13 @@ async def start_vote(message: types.Message):
             callback_data='vote_0'
         )
     )
-    await message.answer('Выберите группу для начала голосования:', reply_markup=inline_keyboard)
+    await message.answer('Выберите действие:', reply_markup=inline_keyboard)
 
 
 @dp.callback_query_handler(Text(equals='vote_1'))
 async def vote_1(callback: types.CallbackQuery):
     await teachers.update_parameter('vote', '1')
+    await teachers.update_ug2022_3_start()
     await callback.message.answer('Голосование началось')
     users_to_send: list = await users.select_all_users()
     for user in users_to_send:
@@ -67,6 +68,7 @@ async def vote_1(callback: types.CallbackQuery):
 @dp.callback_query_handler(Text(equals='vote_0'))
 async def vote_1(callback: types.CallbackQuery):
     await teachers.update_parameter('vote', '0')
+    await teachers.update_ug2022_3_stop()
     await callback.message.answer('Остановлено голосование')
 
 
