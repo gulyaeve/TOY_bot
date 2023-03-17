@@ -9,7 +9,7 @@ async def set_default_commands():
     """
     return await bot.set_my_commands([
         types.BotCommand(command="/start", description="Начать работу с чат-ботом"),
-        types.BotCommand(command="/vote", description="Голосование"),
+        types.BotCommand(command="/teachers", description="Список учителей"),
         types.BotCommand(command="/help", description="Помощь по командам чат-бота"),
         types.BotCommand(command="/cancel", description="Отмена текущего действия"),
     ])
